@@ -2,57 +2,10 @@
 
 #include <iostream>
 
-#include "msgs/address_book_nanopb_cc_pb/msgs/address_book_3.pb.h"
-#include "pb_decode.h"
+#include "msgs/robolog_npb.pb.h"
 #include "pb_encode.h"
 #include "src/benchmark.h"
 #include "src/consts.h"
-
-template <typename T> struct array_handle {
-  T *ptr;
-  size_t len;
-};
-
-bool write_string(pb_ostream_t *stream, const pb_field_t *field,
-                  void *const *arg) {
-  auto argval = *arg;
-  auto handle = *reinterpret_cast<array_handle<const uint8_t> *>(argval);
-
-  if (!pb_encode_tag_for_field(stream, field))
-    return false;
-
-  return pb_encode_string(stream, handle.ptr, handle.len);
-}
-
-//! nanopb callback for writing an array
-namespace helpers {
-template <typename T, const pb_field_t *fields>
-bool write_arrayz(pb_ostream_t *stream, const pb_field_t *field,
-                  void *const *arg) {
-  auto argval = *arg;
-  auto handle = *reinterpret_cast<array_handle<T> *>(argval);
-
-  for (size_t i = 0; i < handle.len; i++) {
-    if (!pb_encode_tag_for_field(stream, field))
-      return false;
-    T *curr = handle.ptr + i;
-    if (!pb_encode_submessage(stream, fields, curr))
-      return false;
-  }
-  return true;
-}
-} // namespace helpers
-
-static bool read_string(pb_istream_t *stream, const pb_field_t *field,
-                        void **arg) {
-  uint8_t buf[16] = {0};
-  size_t len = stream->bytes_left;
-
-  if (len > sizeof(buf) - 1 || !pb_read(stream, buf, len))
-    return false;
-
-  return true;
-}
 
 bool encode_string(pb_ostream_t *stream, const pb_field_t *field,
                    void *const *arg) {
@@ -69,28 +22,47 @@ public:
   NanoPbBenchmarkable() : Benchmarkable() {}
 
   void serialize() {
-    uint8_t buffer[512];
-    size_t message_length;
+    robolog_npb_Robolog robolog = robolog_npb_Robolog_init_zero;
 
-    pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+    robolog.metadata.robot = robolog_npb_Robot_Autumn;
+    strcpy(robolog.metadata.git_commit_sha, "abcdef12345");
+    robolog.metadata.timestamp = 1234567890;
 
-    // pb3::AddressBook address_book;
-    pb3_AddressBook address_book = pb3_AddressBook_init_zero;
+    robolog_npb_Metadata *metadata = &robolog.metadata;
+    robolog_npb_RTCycle *rtcycle = robolog.cycles;
+    robolog_npb_PhysicalState *leg_states = rtcycle->leg_states;
+    robolog_npb_PhysicalState *arm_state = &rtcycle->arm_state;
+    robolog_npb_PhysicalState *elbow_state = &rtcycle->elbow_state;
+    robolog_npb_Pose3D *pose = &rtcycle->pose;
 
-    // auto person = address_book.add_people();
-    pb3_Person person = pb3_Person_init_zero;
+    // Populate the fields
+    metadata->robot = robolog_npb_Robot_Autumn;
+    strncpy(metadata->git_commit_sha, "abcdef12345",
+            sizeof(metadata->git_commit_sha));
+    metadata->git_commit_sha[sizeof(metadata->git_commit_sha) - 1] =
+        '\0'; // Ensure null-termination
+    metadata->timestamp = 1234567890;
 
-    array_handle<const char> email_handle = {PERSON_EMAIL.data(),
-                                             PERSON_EMAIL.size()};
-    person.email.arg = &email_handle;
-    person.email.funcs.encode = encode_string;
+    for (int i = 0; i < 4; i++) {
+      leg_states[i].position = 1.0f * i;
+      leg_states[i].velocity = 2.0f * i;
+      leg_states[i].acceleration = 3.0f * i;
+    }
 
-    array_handle<const char> name_handle = {PERSON_NAME.data(),
-                                            PERSON_NAME.size()};
-    person.name.arg = &name_handle;
-    person.name.funcs.encode = encode_string;
+    arm_state->position = 10.0f;
+    arm_state->velocity = 20.0f;
+    arm_state->acceleration = 30.0f;
 
-    pb_encode(&stream, pb3_Person_fields, &person);
-    message_length = stream.bytes_written;
+    elbow_state->position = 100.0f;
+    elbow_state->velocity = 200.0f;
+    elbow_state->acceleration = 300.0f;
+
+    pose->x = 1.0f;
+    pose->y = 2.0f;
+    pose->z = 3.0f;
+
+    uint8_t buffer[robolog_npb_Robolog_size];
+    pb_ostream_t ostream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+    pb_encode(&ostream, robolog_npb_Robolog_fields, &robolog);
   }
 };

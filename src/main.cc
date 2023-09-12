@@ -2,7 +2,7 @@
 
 #include "benchmark/benchmark.h"
 #include "src/benchmark_fbs.h"
-// #include "src/benchmark_nanopb.h"
+#include "src/benchmark_nanopb.h"
 #include "src/benchmark_proto2.h"
 #include "src/benchmark_proto3.h"
 #include "src/benchmark_ros2.h"
@@ -26,11 +26,11 @@
         return *(std::min_element(std::begin(v), std::end(v)));                \
       });
 
-ADD_BM(ros2, Ros2Benchmarkable);
-ADD_BM(flatbuf, FbsBenchmarkable);
 ADD_BM(proto2, Proto2Benchmarkable);
 ADD_BM(proto3, Proto3Benchmarkable);
-// ADD_BM(nanopb, NanoPbBenchmarkable);
 ADD_BM(upb, UpbBenchmarkable);
+ADD_BM(nanopb, NanoPbBenchmarkable);
+ADD_BM(flatbuf, FbsBenchmarkable);
+ADD_BM(ros2, Ros2Benchmarkable);
 
 BENCHMARK_MAIN();

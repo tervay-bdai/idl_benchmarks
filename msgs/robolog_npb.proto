@@ -1,0 +1,42 @@
+syntax = "proto2";
+
+package robolog_npb;
+
+import "nanopb.proto";
+
+enum Robot {
+    UNKNOWN = 0;
+    Autumn = 1;
+    Betty = 2;
+    Chara = 3;
+}
+
+message Metadata {
+    required Robot robot = 1;
+    required string git_commit_sha = 2 [(nanopb).max_size = 40];
+    required uint64 timestamp = 3;
+}
+
+message PhysicalState {
+    required float position = 1;
+    required float velocity = 2;
+    required float acceleration = 3;
+}
+
+message Pose3D {
+    required float x = 1;
+    required float y = 2;
+    required float z = 3;
+}
+
+message RTCycle {
+    repeated PhysicalState leg_states = 1 [(nanopb).max_count = 4];
+    required PhysicalState arm_state = 2;
+    required PhysicalState elbow_state = 3;
+    required Pose3D pose = 4;
+}
+
+message Robolog {
+    required Metadata metadata = 1;
+    repeated RTCycle cycles = 2 [(nanopb).max_count = 100];
+}

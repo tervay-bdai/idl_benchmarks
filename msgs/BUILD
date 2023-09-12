@@ -36,9 +36,15 @@ cc_proto_library(
     deps = [":address_book_proto_3"],
 )
 
+proto_library(
+    name = "robolog_npb",
+    srcs = ["robolog_npb.proto"],
+    deps = ["@com_github_nanopb_nanopb//:nanopb_proto"],
+)
+
 cc_nanopb_proto_library(
-    name = "address_book_nanopb_cc",
-    protos = [":address_book_proto_3"],
+    name = "robolog_npb_cc",
+    protos = [":robolog_npb"],
 )
 
 proto_library(
