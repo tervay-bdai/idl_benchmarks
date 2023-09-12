@@ -1,0 +1,27 @@
+enum PhoneType: byte {
+    PHONE_TYPE_UNSPECIFIED,
+    PHONE_TYPE_MOBILE,
+    PHONE_TYPE_HOME,
+    PHONE_TYPE_WORK
+}
+
+// Define the PhoneNumber table
+table PhoneNumber {
+    number: string;
+    type: PhoneType = PHONE_TYPE_HOME;
+}
+
+// Define the Person table
+table Person {
+    name: string;
+    id: int;
+    email: string;
+    phones: [PhoneNumber];
+}
+
+// Define the AddressBook table
+table AddressBook {
+    people: [Person];
+}
+
+root_type AddressBook;

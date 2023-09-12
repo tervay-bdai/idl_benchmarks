@@ -1,0 +1,14 @@
+load("@rules_flatbuffers//flatbuffers:cc_flatbuffers_library.bzl", "cc_flatbuffers_library")
+load("@rules_flatbuffers//flatbuffers:flatbuffers_library.bzl", "flatbuffers_library")
+
+package(default_visibility = ["//visibility:public"])
+
+flatbuffers_library(
+    name = "address_book_fbs",
+    srcs = ["address_book.fbs"],
+)
+
+cc_flatbuffers_library(
+    name = "address_book_fbs_cc",
+    deps = [":address_book_fbs"],
+)
