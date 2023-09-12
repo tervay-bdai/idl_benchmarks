@@ -13,7 +13,7 @@ class UpbBenchmarkable : public Benchmarkable {
 public:
   UpbBenchmarkable() : Benchmarkable() {}
 
-  void serialize() {
+  const SerializeResult serialize() {
     const auto a = arena_.ptr();
 
     robolog_upb_Robolog *log = robolog_upb_Robolog_new(a);
@@ -53,6 +53,10 @@ public:
     robolog_upb_Pose3D_set_z(pose, 3.0f);
 
     s_.data = robolog_upb_Robolog_serialize(log, a, &s_.size);
+    return {
+        .data = reinterpret_cast<const std::byte *>(s_.data),
+        .size = s_.size,
+    };
   }
 
   upb::DefPool defpool_;

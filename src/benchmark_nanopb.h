@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring>
 #include <iostream>
 
 #include "msgs/robolog_npb.pb.h"
@@ -21,19 +22,16 @@ class NanoPbBenchmarkable : public Benchmarkable {
 public:
   NanoPbBenchmarkable() : Benchmarkable() {}
 
-  void serialize() {
+  const SerializeResult serialize() {
+    std::memset(buffer, 0, sizeof(buffer));
+
     robolog_npb_Robolog robolog = robolog_npb_Robolog_init_zero;
-
-    robolog.metadata.robot = robolog_npb_Robot_Autumn;
-    strcpy(robolog.metadata.git_commit_sha, "abcdef12345");
-    robolog.metadata.timestamp = 1234567890;
-
     robolog_npb_Metadata *metadata = &robolog.metadata;
-    robolog_npb_RTCycle *rtcycle = robolog.cycles;
-    robolog_npb_PhysicalState *leg_states = rtcycle->leg_states;
-    robolog_npb_PhysicalState *arm_state = &rtcycle->arm_state;
-    robolog_npb_PhysicalState *elbow_state = &rtcycle->elbow_state;
-    robolog_npb_Pose3D *pose = &rtcycle->pose;
+    robolog_npb_RTCycle rtcycle = robolog.cycles[0];
+    robolog_npb_PhysicalState *leg_states = rtcycle.leg_states;
+    robolog_npb_PhysicalState *arm_state = &rtcycle.arm_state;
+    robolog_npb_PhysicalState *elbow_state = &rtcycle.elbow_state;
+    robolog_npb_Pose3D *pose = &rtcycle.pose;
 
     // Populate the fields
     metadata->robot = robolog_npb_Robot_Autumn;
@@ -49,6 +47,9 @@ public:
       leg_states[i].acceleration = 3.0f * i;
     }
 
+    robolog.cycles_count = 1;
+    robolog.cycles[0].leg_states_count = 4;
+
     arm_state->position = 10.0f;
     arm_state->velocity = 20.0f;
     arm_state->acceleration = 30.0f;
@@ -61,8 +62,16 @@ public:
     pose->y = 2.0f;
     pose->z = 3.0f;
 
-    uint8_t buffer[robolog_npb_Robolog_size];
-    pb_ostream_t ostream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+    pb_ostream_t ostream =
+        pb_ostream_from_buffer(buffer, robolog_npb_Robolog_size);
     pb_encode(&ostream, robolog_npb_Robolog_fields, &robolog);
+
+    return {
+        .data = reinterpret_cast<const std::byte *>(buffer),
+        .size = ostream.bytes_written,
+    };
   }
+
+  uint8_t buffer[robolog_npb_Robolog_size];
+  size_t s;
 };

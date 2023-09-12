@@ -17,7 +17,7 @@ class Ros2Benchmarkable : public Benchmarkable {
 public:
   Ros2Benchmarkable() : Benchmarkable() {}
 
-  void serialize() {
+  const SerializeResult serialize() {
     robolog_interface::msg::Robolog robolog_msg;
 
     // Create a Metadata message and set its fields
@@ -63,6 +63,12 @@ public:
         std::make_shared<robolog_interface::msg::Robolog>(robolog_msg);
 
     ser.serialize_message(msg_ptr.get(), &out);
+
+    return {
+        .data = reinterpret_cast<const std::byte *>(
+            out.get_rcl_serialized_message().buffer),
+        .size = out.size(),
+    };
   }
 
   rclcpp::Serialization<robolog_interface::msg::Robolog> ser;

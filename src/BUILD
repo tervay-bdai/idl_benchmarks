@@ -94,3 +94,15 @@ cc_library(
         "@ros2_rosidl//:rosidl_runtime_cpp",
     ],
 )
+
+cc_test(
+    name = "protos_all_same_test",
+    srcs = ["protos_all_same_test.cc"],
+    deps = [
+        ":benchmark_nanopb",
+        ":benchmark_proto2",
+        ":benchmark_proto3",
+        ":benchmark_upb",
+        "@com_google_googletest//:gtest_main",
+    ],
+)

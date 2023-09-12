@@ -10,7 +10,7 @@ class FbsBenchmarkable : public Benchmarkable {
 public:
   FbsBenchmarkable() : Benchmarkable(), fbs_builder_(1024) {}
 
-  void serialize() {
+  const SerializeResult serialize() {
     // Clear the existing data in the builder
     fbs_builder_.Clear();
 
@@ -59,6 +59,12 @@ public:
 
     // Finish building the buffer
     fbs_builder_.Finish(mylog);
+
+    return {
+        .data = reinterpret_cast<const std::byte *>(
+            fbs_builder_.GetBufferPointer()),
+        .size = fbs_builder_.GetSize(),
+    };
   }
 
   flatbuffers::FlatBufferBuilder fbs_builder_;

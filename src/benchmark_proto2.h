@@ -10,7 +10,7 @@ class Proto2Benchmarkable : public Benchmarkable {
 public:
   Proto2Benchmarkable() : Benchmarkable() {}
 
-  void serialize() {
+  const SerializeResult serialize() {
     robolog_pb2::Robolog myLog;
 
     robolog_pb2::Metadata *metadata = myLog.mutable_metadata();
@@ -42,6 +42,10 @@ public:
     pose->set_z(3.0f);
 
     myLog.SerializeToString(&s);
+    return {
+        .data = reinterpret_cast<const std::byte *>(s.data()),
+        .size = s.size(),
+    };
   }
 
   std::string s;

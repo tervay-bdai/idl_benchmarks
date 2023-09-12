@@ -2,9 +2,14 @@
 
 #include <chrono>
 
+struct SerializeResult {
+  const std::byte *data;
+  const size_t size;
+};
+
 class Benchmarkable {
 public:
   Benchmarkable() {}
   virtual ~Benchmarkable() {}
-  virtual void serialize() = 0;
+  virtual const SerializeResult serialize() = 0;
 };
