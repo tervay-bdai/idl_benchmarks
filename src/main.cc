@@ -5,6 +5,7 @@
 #include "src/benchmark_nanopb.h"
 #include "src/benchmark_proto2.h"
 #include "src/benchmark_proto3.h"
+#include "src/benchmark_upb.h"
 
 static void BM_flatbuf(benchmark::State &state) {
   FbsBenchmarkable fbs;
@@ -35,8 +36,57 @@ static void BM_nanopb(benchmark::State &state) {
   }
 }
 
-BENCHMARK(BM_flatbuf);
-BENCHMARK(BM_proto2);
-BENCHMARK(BM_proto3);
-BENCHMARK(BM_nanopb);
+static void BM_upb(benchmark::State &state) {
+  UpbBenchmarkable upb;
+  for (auto _ : state) {
+    upb.serialize();
+  }
+}
+
+BENCHMARK(BM_flatbuf)
+    ->ComputeStatistics("max",
+                        [](const std::vector<double> &v) -> double {
+                          return *(
+                              std::max_element(std::begin(v), std::end(v)));
+                        })
+    ->ComputeStatistics("min", [](const std::vector<double> &v) -> double {
+      return *(std::min_element(std::begin(v), std::end(v)));
+    });
+BENCHMARK(BM_proto2)
+    ->ComputeStatistics("max",
+                        [](const std::vector<double> &v) -> double {
+                          return *(
+                              std::max_element(std::begin(v), std::end(v)));
+                        })
+    ->ComputeStatistics("min", [](const std::vector<double> &v) -> double {
+      return *(std::min_element(std::begin(v), std::end(v)));
+    });
+BENCHMARK(BM_proto3)
+    ->ComputeStatistics("max",
+                        [](const std::vector<double> &v) -> double {
+                          return *(
+                              std::max_element(std::begin(v), std::end(v)));
+                        })
+    ->ComputeStatistics("min", [](const std::vector<double> &v) -> double {
+      return *(std::min_element(std::begin(v), std::end(v)));
+    });
+BENCHMARK(BM_nanopb)
+    ->ComputeStatistics("max",
+                        [](const std::vector<double> &v) -> double {
+                          return *(
+                              std::max_element(std::begin(v), std::end(v)));
+                        })
+    ->ComputeStatistics("min", [](const std::vector<double> &v) -> double {
+      return *(std::min_element(std::begin(v), std::end(v)));
+    });
+BENCHMARK(BM_upb)
+    ->ComputeStatistics("max",
+                        [](const std::vector<double> &v) -> double {
+                          return *(
+                              std::max_element(std::begin(v), std::end(v)));
+                        })
+    ->ComputeStatistics("min", [](const std::vector<double> &v) -> double {
+      return *(std::min_element(std::begin(v), std::end(v)));
+    });
+
 BENCHMARK_MAIN();

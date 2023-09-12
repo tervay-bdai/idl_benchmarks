@@ -6,3 +6,4 @@ external
 .cache
 .vscode
 compile_commands.json
+env

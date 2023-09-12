@@ -1,6 +1,20 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
+git_repository(
+    name = "upb",
+    commit = "e7430e66d6e51def2a88f0b66fdab62b0d9492c1",
+    remote = "https://github.com/protocolbuffers/upb.git",
+)
+
+load("@upb//bazel:workspace_deps.bzl", "upb_deps")
+
+upb_deps()
+
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+
+protobuf_deps()
+
 http_archive(
     name = "io_bazel_rules_docker",
     sha256 = "b1e80761a8a8243d03ebca8845e9cc1ba6c82ce7c5179ce2b295cd36f7e394bf",
@@ -80,7 +94,7 @@ py_repositories()
 
 python_register_toolchains(
     name = "python3_11",
-    python_version = "3.11",
+    python_version = "3.8.10",
 )
 
 load("@com_github_nanopb_nanopb//extra/bazel:python_deps.bzl", "nanopb_python_deps")

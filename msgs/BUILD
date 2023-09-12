@@ -2,6 +2,7 @@ load("@com_github_nanopb_nanopb//extra/bazel:nanopb_cc_proto_library.bzl", "cc_n
 load("@rules_flatbuffers//flatbuffers:cc_flatbuffers_library.bzl", "cc_flatbuffers_library")
 load("@rules_flatbuffers//flatbuffers:flatbuffers_library.bzl", "flatbuffers_library")
 load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@upb//bazel:upb_proto_library.bzl", "upb_proto_library", "upb_proto_reflection_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -38,4 +39,23 @@ cc_proto_library(
 cc_nanopb_proto_library(
     name = "address_book_nanopb_cc",
     protos = [":address_book_proto_3"],
+)
+
+proto_library(
+    name = "address_book_proto_upb",
+    srcs = ["address_book_upb.proto"],
+)
+
+upb_proto_library(
+    name = "address_book_upb_cc",
+    deps = [
+        ":address_book_proto_upb",
+    ],
+)
+
+upb_proto_reflection_library(
+    name = "address_book_upb_cc_reflection",
+    deps = [
+        ":address_book_proto_upb",
+    ],
 )
