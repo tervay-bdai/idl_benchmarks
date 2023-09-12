@@ -23,3 +23,13 @@ cc_proto_library(
     name = "address_book_proto_2_cc",
     deps = [":address_book_proto_2"],
 )
+
+proto_library(
+    name = "address_book_proto_3",
+    srcs = ["address_book_3.proto"],
+)
+
+cc_proto_library(
+    name = "address_book_proto_3_cc",
+    deps = [":address_book_proto_3"],
+)

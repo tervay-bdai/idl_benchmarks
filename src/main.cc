@@ -3,6 +3,7 @@
 #include "benchmark/benchmark.h"
 #include "src/benchmark_fbs.h"
 #include "src/benchmark_proto2.h"
+#include "src/benchmark_proto3.h"
 
 static void BM_flatbuf(benchmark::State &state) {
   FbsBenchmarkable fbs;
@@ -19,10 +20,14 @@ static void BM_proto2(benchmark::State &state) {
   }
 }
 
-int main(int argc, char **argv) {
-  benchmark::RegisterBenchmark("BM_flatbuf", BM_flatbuf);
-  benchmark::RegisterBenchmark("BM_proto2", BM_proto2);
-  benchmark::Initialize(&argc, argv);
-  benchmark::RunSpecifiedBenchmarks();
-  benchmark::Shutdown();
+static void BM_proto3(benchmark::State &state) {
+  Proto3Benchmarkable pb3;
+  for (auto _ : state) {
+    pb3.serialize();
+  }
 }
+
+BENCHMARK(BM_flatbuf);
+BENCHMARK(BM_proto2);
+BENCHMARK(BM_proto3);
+BENCHMARK_MAIN();
