@@ -6,36 +6,6 @@ load("@upb//bazel:upb_proto_library.bzl", "upb_proto_library", "upb_proto_reflec
 
 package(default_visibility = ["//visibility:public"])
 
-flatbuffers_library(
-    name = "address_book_fbs",
-    srcs = ["address_book.fbs"],
-)
-
-cc_flatbuffers_library(
-    name = "address_book_fbs_cc",
-    deps = [":address_book_fbs"],
-)
-
-proto_library(
-    name = "address_book_proto_2",
-    srcs = ["address_book_2.proto"],
-)
-
-cc_proto_library(
-    name = "address_book_proto_2_cc",
-    deps = [":address_book_proto_2"],
-)
-
-proto_library(
-    name = "address_book_proto_3",
-    srcs = ["address_book_3.proto"],
-)
-
-cc_proto_library(
-    name = "address_book_proto_3_cc",
-    deps = [":address_book_proto_3"],
-)
-
 proto_library(
     name = "robolog_npb",
     srcs = ["robolog_npb.proto"],
@@ -45,25 +15,6 @@ proto_library(
 cc_nanopb_proto_library(
     name = "robolog_npb_cc",
     protos = [":robolog_npb"],
-)
-
-proto_library(
-    name = "address_book_proto_upb",
-    srcs = ["address_book_upb.proto"],
-)
-
-upb_proto_library(
-    name = "address_book_upb_cc",
-    deps = [
-        ":address_book_proto_upb",
-    ],
-)
-
-upb_proto_reflection_library(
-    name = "address_book_upb_cc_reflection",
-    deps = [
-        ":address_book_proto_upb",
-    ],
 )
 
 proto_library(
