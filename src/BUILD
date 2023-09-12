@@ -16,6 +16,7 @@ cc_binary(
     deps = [
         ":benchmark",
         ":benchmark_fbs",
+        ":benchmark_nanopb",
         ":benchmark_proto2",
         ":benchmark_proto3",
         "@com_github_google_benchmark//:benchmark",
@@ -52,5 +53,16 @@ cc_library(
         ":benchmark",
         ":consts",
         "//msgs:address_book_proto_3_cc",
+    ],
+)
+
+cc_library(
+    name = "benchmark_nanopb",
+    srcs = [],
+    hdrs = ["benchmark_nanopb.h"],
+    deps = [
+        ":benchmark",
+        ":consts",
+        "//msgs:address_book_nanopb_cc",
     ],
 )

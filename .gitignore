@@ -5,3 +5,4 @@ bazel-testlogs
 external
 .cache
 .vscode
+compile_commands.json

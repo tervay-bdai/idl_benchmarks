@@ -1,3 +1,4 @@
+load("@com_github_nanopb_nanopb//extra/bazel:nanopb_cc_proto_library.bzl", "cc_nanopb_proto_library")
 load("@rules_flatbuffers//flatbuffers:cc_flatbuffers_library.bzl", "cc_flatbuffers_library")
 load("@rules_flatbuffers//flatbuffers:flatbuffers_library.bzl", "flatbuffers_library")
 load("@rules_proto//proto:defs.bzl", "proto_library")
@@ -32,4 +33,9 @@ proto_library(
 cc_proto_library(
     name = "address_book_proto_3_cc",
     deps = [":address_book_proto_3"],
+)
+
+cc_nanopb_proto_library(
+    name = "address_book_nanopb_cc",
+    protos = [":address_book_proto_3"],
 )
