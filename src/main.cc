@@ -2,7 +2,7 @@
 
 #include "benchmark/benchmark.h"
 #include "src/benchmark_fbs.h"
-#include "src/benchmark_nanopb.h"
+// #include "src/benchmark_nanopb.h"
 #include "src/benchmark_proto2.h"
 #include "src/benchmark_proto3.h"
 #include "src/benchmark_upb.h"
@@ -28,7 +28,7 @@
 ADD_BM(flatbuf, FbsBenchmarkable);
 ADD_BM(proto2, Proto2Benchmarkable);
 ADD_BM(proto3, Proto3Benchmarkable);
-ADD_BM(nanopb, NanoPbBenchmarkable);
+// ADD_BM(nanopb, NanoPbBenchmarkable);
 ADD_BM(upb, UpbBenchmarkable);
 
 BENCHMARK_MAIN();

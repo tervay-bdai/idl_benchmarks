@@ -89,3 +89,22 @@ cc_flatbuffers_library(
     name = "robolog_fbs_cc",
     deps = [":robolog_fbs"],
 )
+
+proto_library(
+    name = "robolog_upb",
+    srcs = ["robolog_upb.proto"],
+)
+
+upb_proto_library(
+    name = "robolog_upb_cc",
+    deps = [
+        ":robolog_upb",
+    ],
+)
+
+upb_proto_reflection_library(
+    name = "robolog_upb_cc_reflection",
+    deps = [
+        ":robolog_upb",
+    ],
+)

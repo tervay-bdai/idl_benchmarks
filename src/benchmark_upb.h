@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "msgs/address_book_upb.upb.h"
+#include "msgs/robolog_upb.upb.h"
 #include "src/benchmark.h"
 #include "src/consts.h"
 
@@ -14,25 +14,48 @@ public:
   UpbBenchmarkable() : Benchmarkable() {}
 
   void serialize() {
-    upb_AddressBook *address_book = upb_AddressBook_new(arena_.ptr());
-    upb_Person *person = upb_AddressBook_add_people(address_book, arena_.ptr());
-    upb_Person_PhoneNumber *pn = upb_Person_add_phones(person, arena_.ptr());
+    const auto a = arena_.ptr();
 
-    upb_Person_PhoneNumber_set_number(
-        pn, upb_StringView_FromDataAndSize(PERSON_PHONE_NUMBER.data(),
-                                           PERSON_PHONE_NUMBER.size()));
-    upb_Person_PhoneNumber_set_type(pn, upb_Person_PHONE_TYPE_MOBILE);
+    robolog_upb_Robolog *log = robolog_upb_Robolog_new(a);
 
-    upb_Person_set_email(person, upb_StringView_FromDataAndSize(
-                                     PERSON_EMAIL.data(), PERSON_EMAIL.size()));
-    upb_Person_set_name(person, upb_StringView_FromDataAndSize(
-                                    PERSON_NAME.data(), PERSON_NAME.size()));
-    upb_Person_set_id(person, PERSON_ID);
+    robolog_upb_Metadata *metadata = robolog_upb_Metadata_new(a);
+    robolog_upb_Metadata_set_robot(metadata, robolog_upb_Autumn);
+    robolog_upb_Metadata_set_git_commit_sha(
+        metadata, upb_StringView_FromString("abcdef12345"));
+    robolog_upb_Metadata_set_timestamp(metadata, 1234567890);
+    robolog_upb_Robolog_set_metadata(log, metadata);
 
-    upb_StringView ser;
-    ser.data = upb_AddressBook_serialize(address_book, arena_.ptr(), &ser.size);
+    robolog_upb_RTCycle *cycle = robolog_upb_Robolog_add_cycles(log, a);
+    for (int i = 0; i < 4; i++) {
+      robolog_upb_PhysicalState *legState =
+          robolog_upb_RTCycle_add_leg_states(cycle, a);
+
+      robolog_upb_PhysicalState_set_position(legState, 1.0f * i);
+      robolog_upb_PhysicalState_set_velocity(legState, 2.0f * i);
+      robolog_upb_PhysicalState_set_acceleration(legState, 3.0f * i);
+    }
+
+    robolog_upb_PhysicalState *armState =
+        robolog_upb_RTCycle_mutable_arm_state(cycle, a);
+    robolog_upb_PhysicalState_set_position(armState, 10.0f);
+    robolog_upb_PhysicalState_set_velocity(armState, 20.0f);
+    robolog_upb_PhysicalState_set_acceleration(armState, 30.0f);
+
+    robolog_upb_PhysicalState *elbowState =
+        robolog_upb_RTCycle_mutable_elbow_state(cycle, a);
+    robolog_upb_PhysicalState_set_position(elbowState, 100.0f);
+    robolog_upb_PhysicalState_set_velocity(elbowState, 200.0f);
+    robolog_upb_PhysicalState_set_acceleration(elbowState, 300.0f);
+
+    robolog_upb_Pose3D *pose = robolog_upb_RTCycle_mutable_pose(cycle, a);
+    robolog_upb_Pose3D_set_x(pose, 1.0f);
+    robolog_upb_Pose3D_set_y(pose, 2.0f);
+    robolog_upb_Pose3D_set_z(pose, 3.0f);
+
+    s_.data = robolog_upb_Robolog_serialize(log, a, &s_.size);
   }
 
   upb::DefPool defpool_;
   upb::Arena arena_;
+  upb_StringView s_;
 };

@@ -16,7 +16,7 @@ cc_binary(
     deps = [
         ":benchmark",
         ":benchmark_fbs",
-        ":benchmark_nanopb",
+        # ":benchmark_nanopb",
         ":benchmark_proto2",
         ":benchmark_proto3",
         ":benchmark_upb",
@@ -75,8 +75,8 @@ cc_library(
     deps = [
         ":benchmark",
         ":consts",
-        "//msgs:address_book_upb_cc",
-        "//msgs:address_book_upb_cc_reflection",
+        "//msgs:robolog_upb_cc",
+        "//msgs:robolog_upb_cc_reflection",
         "@upb",
     ],
 )
