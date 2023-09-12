@@ -31,7 +31,7 @@ cc_library(
     deps = [
         ":benchmark",
         ":consts",
-        "//msgs:address_book_fbs_cc",
+        "//msgs:robolog_fbs_cc",
     ],
 )
 
@@ -42,7 +42,7 @@ cc_library(
     deps = [
         ":benchmark",
         ":consts",
-        "//msgs:address_book_proto_2_cc",
+        "//msgs:robolog_pb2_cc",
     ],
 )
 
@@ -53,7 +53,7 @@ cc_library(
     deps = [
         ":benchmark",
         ":consts",
-        "//msgs:address_book_proto_3_cc",
+        "//msgs:robolog_pb3_cc",
     ],
 )
 
@@ -72,16 +72,6 @@ cc_library(
     name = "benchmark_upb",
     srcs = [],
     hdrs = ["benchmark_upb.h"],
-    copts = [
-        # "-std=c99",
-        # "-Wall",
-        # "-Wstrict-prototypes",
-        # "-Wextra",
-        # # "-Wshorten-64-to-32",  # not in GCC (and my Kokoro images doesn't have Clang)
-        # "-Werror",
-        # "-Wno-unused-parameter",
-        # "-Wno-long-long",
-    ],
     deps = [
         ":benchmark",
         ":consts",

@@ -59,3 +59,33 @@ upb_proto_reflection_library(
         ":address_book_proto_upb",
     ],
 )
+
+proto_library(
+    name = "robolog_pb2",
+    srcs = ["robolog_pb2.proto"],
+)
+
+cc_proto_library(
+    name = "robolog_pb2_cc",
+    deps = [":robolog_pb2"],
+)
+
+proto_library(
+    name = "robolog_pb3",
+    srcs = ["robolog_pb3.proto"],
+)
+
+cc_proto_library(
+    name = "robolog_pb3_cc",
+    deps = [":robolog_pb3"],
+)
+
+flatbuffers_library(
+    name = "robolog_fbs",
+    srcs = ["robolog_fbs.fbs"],
+)
+
+cc_flatbuffers_library(
+    name = "robolog_fbs_cc",
+    deps = [":robolog_fbs"],
+)

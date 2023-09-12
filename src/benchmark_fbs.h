@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "msgs/address_book_generated.h"
+#include "msgs/robolog_fbs_generated.h"
 #include "src/benchmark.h"
 #include "src/consts.h"
 
@@ -11,27 +11,54 @@ public:
   FbsBenchmarkable() : Benchmarkable(), fbs_builder_(1024) {}
 
   void serialize() {
-    flatbuffers::Offset<flatbuffers::String> name =
-        fbs_builder_.CreateString(PERSON_NAME);
-    flatbuffers::Offset<flatbuffers::String> email =
-        fbs_builder_.CreateString(PERSON_EMAIL);
-    flatbuffers::Offset<flatbuffers::String> phone_number_str =
-        fbs_builder_.CreateString(PERSON_EMAIL);
+    // Clear the existing data in the builder
+    fbs_builder_.Clear();
 
-    std::vector<flatbuffers::Offset<fbs::PhoneNumber>> phoneNumbers;
-    phoneNumbers.emplace_back(
-        CreatePhoneNumber(fbs_builder_, phone_number_str,
-                          fbs::PhoneType::PhoneType_PHONE_TYPE_MOBILE));
+    // Create a Metadata object
+    auto git_commit_sha = fbs_builder_.CreateString("abcdef12345");
+    robolog_fbs::Robot robot = robolog_fbs::Robot_Autumn;
+    uint64_t timestamp = 1234567890;
+    auto metadata = robolog_fbs::CreateMetadata(fbs_builder_, robot,
+                                                git_commit_sha, timestamp);
 
-    const auto pn = fbs_builder_.CreateVector(phoneNumbers);
+    // Create PhysicalState objects
+    float position = 1.0f;
+    float velocity = 2.0f;
+    float acceleration = 3.0f;
+    flatbuffers::Offset<robolog_fbs::PhysicalState> leg_states[4];
 
-    std::vector<flatbuffers::Offset<fbs::Person>> people;
-    people.emplace_back(
-        fbs::CreatePerson(fbs_builder_, name, PERSON_ID, email, pn));
+    leg_states[0] = robolog_fbs::CreatePhysicalState(fbs_builder_, position,
+                                                     velocity, acceleration);
+    leg_states[1] = robolog_fbs::CreatePhysicalState(
+        fbs_builder_, position * 2, velocity * 2, acceleration * 2);
+    leg_states[2] = robolog_fbs::CreatePhysicalState(
+        fbs_builder_, position * 3, velocity * 3, acceleration * 3);
+    leg_states[3] = robolog_fbs::CreatePhysicalState(
+        fbs_builder_, position * 4, velocity * 4, acceleration * 4);
 
-    const auto ppl = fbs_builder_.CreateVector(people);
+    auto leg_states_vector = fbs_builder_.CreateVector(leg_states, 4);
 
-    fbs_builder_.Finish(fbs::CreateAddressBook(fbs_builder_, ppl));
+    // Create Pose3D object
+    float x = 1.0f;
+    float y = 2.0f;
+    float z = 3.0f;
+    auto pose = robolog_fbs::CreatePose3D(fbs_builder_, x, y, z);
+
+    // Create RTCycle object
+    auto rtcycle = robolog_fbs::CreateRTCycle(
+        fbs_builder_, leg_states_vector,
+        robolog_fbs::CreatePhysicalState(fbs_builder_, 10.0f, 20.0f, 30.0f),
+        robolog_fbs::CreatePhysicalState(fbs_builder_, 100.0f, 200.0f, 300.0f),
+        pose);
+
+    // Create MyLog object
+    flatbuffers::Offset<robolog_fbs::RTCycle> cycles[] = {rtcycle};
+    auto cycles_vector = fbs_builder_.CreateVector(cycles, 1);
+    auto mylog =
+        robolog_fbs::CreateMyLog(fbs_builder_, metadata, cycles_vector);
+
+    // Finish building the buffer
+    fbs_builder_.Finish(mylog);
   }
 
   flatbuffers::FlatBufferBuilder fbs_builder_;

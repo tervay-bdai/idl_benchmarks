@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "msgs/address_book_2.pb.h"
+#include "msgs/robolog_pb2.pb.h"
 #include "src/benchmark.h"
 #include "src/consts.h"
 
@@ -11,18 +11,38 @@ public:
   Proto2Benchmarkable() : Benchmarkable() {}
 
   void serialize() {
-    pb2::AddressBook address_book;
+    robolog_pb2::Robolog myLog;
 
-    auto person = address_book.add_people();
-    auto phone = person->add_phones();
+    robolog_pb2::Metadata *metadata = myLog.mutable_metadata();
+    metadata->set_robot(robolog_pb2::Robot::Autumn);
+    metadata->set_git_commit_sha("abcdef12345");
+    metadata->set_timestamp(1234567890);
 
-    phone->set_number(PERSON_PHONE_NUMBER.data(), PERSON_PHONE_NUMBER.size());
-    phone->set_type(pb2::Person::PHONE_TYPE_MOBILE);
+    // Populate RTCycle
+    robolog_pb2::RTCycle *cycle = myLog.add_cycles();
+    for (int i = 0; i < 4; i++) {
+      robolog_pb2::PhysicalState *legState = cycle->add_leg_states();
+      legState->set_position(1.0f * i);
+      legState->set_velocity(2.0f * i);
+      legState->set_acceleration(3.0f * i);
+    }
+    robolog_pb2::PhysicalState *armState = cycle->mutable_arm_state();
+    armState->set_position(10.0f);
+    armState->set_velocity(20.0f);
+    armState->set_acceleration(30.0f);
 
-    person->set_email(PERSON_EMAIL.data(), PERSON_EMAIL.size());
-    person->set_name(PERSON_NAME.data(), PERSON_NAME.size());
-    person->set_id(PERSON_ID);
+    robolog_pb2::PhysicalState *elbowState = cycle->mutable_elbow_state();
+    elbowState->set_position(100.0f);
+    elbowState->set_velocity(200.0f);
+    elbowState->set_acceleration(300.0f);
 
-    address_book.SerializeAsString();
+    robolog_pb2::Pose3D *pose = cycle->mutable_pose();
+    pose->set_x(1.0f);
+    pose->set_y(2.0f);
+    pose->set_z(3.0f);
+
+    myLog.SerializeToString(&s);
   }
+
+  std::string s;
 };

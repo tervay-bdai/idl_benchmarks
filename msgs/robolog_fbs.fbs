@@ -1,0 +1,38 @@
+namespace robolog_fbs;
+
+enum Robot : byte {
+	UNKNOWN = 0,
+  Autumn = 1,
+	Betty = 2,
+  Chara = 3,
+}
+
+table Metadata {
+	robot: Robot;
+  git_commit_sha: string;
+  timestamp: ulong;
+}
+
+table PhysicalState {
+	position: float;
+  velocity: float;
+  acceleration: float;
+}
+
+table Pose3D {
+  x: float;
+  y: float;
+  z: float;
+}
+
+table RTCycle {
+  leg_states: [PhysicalState];
+	arm_state: PhysicalState;
+	elbow_state: PhysicalState;
+  pose: Pose3D;
+}
+
+table MyLog {
+  metadata: Metadata;
+  cycles: [RTCycle];
+}
