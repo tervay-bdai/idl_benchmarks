@@ -4,12 +4,19 @@ cc_library(
     hdrs = ["benchmark.h"],
 )
 
+cc_library(
+    name = "consts",
+    srcs = [],
+    hdrs = ["consts.h"],
+)
+
 cc_binary(
     name = "main",
     srcs = ["main.cc"],
     deps = [
         ":benchmark",
         ":benchmark_fbs",
+        ":benchmark_proto2",
         "@com_github_google_benchmark//:benchmark",
     ],
 )
@@ -20,6 +27,18 @@ cc_library(
     hdrs = ["benchmark_fbs.h"],
     deps = [
         ":benchmark",
+        ":consts",
         "//msgs:address_book_fbs_cc",
+    ],
+)
+
+cc_library(
+    name = "benchmark_proto2",
+    srcs = [],
+    hdrs = ["benchmark_proto2.h"],
+    deps = [
+        ":benchmark",
+        ":consts",
+        "//msgs:address_book_proto_2_cc",
     ],
 )

@@ -1,3 +1,5 @@
+namespace fbs;
+
 enum PhoneType: byte {
     PHONE_TYPE_UNSPECIFIED,
     PHONE_TYPE_MOBILE,
