@@ -7,86 +7,28 @@
 #include "src/benchmark_proto3.h"
 #include "src/benchmark_upb.h"
 
-static void BM_flatbuf(benchmark::State &state) {
-  FbsBenchmarkable fbs;
+#define ADD_BM(name, benchmarkable_type)                                       \
+  static void BM_##name(benchmark::State &state) {                             \
+    benchmarkable_type benchmarkable;                                          \
+    for (auto _ : state) {                                                     \
+      benchmarkable.serialize();                                               \
+    }                                                                          \
+  }                                                                            \
+                                                                               \
+  BENCHMARK(BM_##name)                                                         \
+      ->ComputeStatistics("max",                                               \
+                          [](const std::vector<double> &v) -> double {         \
+                            return *(                                          \
+                                std::max_element(std::begin(v), std::end(v))); \
+                          })                                                   \
+      ->ComputeStatistics("min", [](const std::vector<double> &v) -> double {  \
+        return *(std::min_element(std::begin(v), std::end(v)));                \
+      });
 
-  for (auto _ : state) {
-    fbs.serialize();
-  }
-}
-
-static void BM_proto2(benchmark::State &state) {
-  Proto2Benchmarkable pb2;
-  for (auto _ : state) {
-    pb2.serialize();
-  }
-}
-
-static void BM_proto3(benchmark::State &state) {
-  Proto3Benchmarkable pb3;
-  for (auto _ : state) {
-    pb3.serialize();
-  }
-}
-
-static void BM_nanopb(benchmark::State &state) {
-  NanoPbBenchmarkable npb;
-  for (auto _ : state) {
-    npb.serialize();
-  }
-}
-
-static void BM_upb(benchmark::State &state) {
-  UpbBenchmarkable upb;
-  for (auto _ : state) {
-    upb.serialize();
-  }
-}
-
-BENCHMARK(BM_flatbuf)
-    ->ComputeStatistics("max",
-                        [](const std::vector<double> &v) -> double {
-                          return *(
-                              std::max_element(std::begin(v), std::end(v)));
-                        })
-    ->ComputeStatistics("min", [](const std::vector<double> &v) -> double {
-      return *(std::min_element(std::begin(v), std::end(v)));
-    });
-BENCHMARK(BM_proto2)
-    ->ComputeStatistics("max",
-                        [](const std::vector<double> &v) -> double {
-                          return *(
-                              std::max_element(std::begin(v), std::end(v)));
-                        })
-    ->ComputeStatistics("min", [](const std::vector<double> &v) -> double {
-      return *(std::min_element(std::begin(v), std::end(v)));
-    });
-BENCHMARK(BM_proto3)
-    ->ComputeStatistics("max",
-                        [](const std::vector<double> &v) -> double {
-                          return *(
-                              std::max_element(std::begin(v), std::end(v)));
-                        })
-    ->ComputeStatistics("min", [](const std::vector<double> &v) -> double {
-      return *(std::min_element(std::begin(v), std::end(v)));
-    });
-BENCHMARK(BM_nanopb)
-    ->ComputeStatistics("max",
-                        [](const std::vector<double> &v) -> double {
-                          return *(
-                              std::max_element(std::begin(v), std::end(v)));
-                        })
-    ->ComputeStatistics("min", [](const std::vector<double> &v) -> double {
-      return *(std::min_element(std::begin(v), std::end(v)));
-    });
-BENCHMARK(BM_upb)
-    ->ComputeStatistics("max",
-                        [](const std::vector<double> &v) -> double {
-                          return *(
-                              std::max_element(std::begin(v), std::end(v)));
-                        })
-    ->ComputeStatistics("min", [](const std::vector<double> &v) -> double {
-      return *(std::min_element(std::begin(v), std::end(v)));
-    });
+ADD_BM(flatbuf, FbsBenchmarkable);
+ADD_BM(proto2, Proto2Benchmarkable);
+ADD_BM(proto3, Proto3Benchmarkable);
+ADD_BM(nanopb, NanoPbBenchmarkable);
+ADD_BM(upb, UpbBenchmarkable);
 
 BENCHMARK_MAIN();
