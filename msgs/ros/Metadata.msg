@@ -1,0 +1,3 @@
+uint8 robot
+string git_commit_sha
+uint64 timestamp

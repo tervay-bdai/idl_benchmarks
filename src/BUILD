@@ -19,6 +19,7 @@ cc_binary(
         # ":benchmark_nanopb",
         ":benchmark_proto2",
         ":benchmark_proto3",
+        ":benchmark_ros2",
         ":benchmark_upb",
         "@com_github_google_benchmark//:benchmark",
     ],
@@ -78,5 +79,18 @@ cc_library(
         "//msgs:robolog_upb_cc",
         "//msgs:robolog_upb_cc_reflection",
         "@upb",
+    ],
+)
+
+cc_library(
+    name = "benchmark_ros2",
+    srcs = [],
+    hdrs = ["benchmark_ros2.h"],
+    deps = [
+        ":benchmark",
+        ":consts",
+        "//msgs/ros:robolog_interface_cc",
+        "@ros2_rclcpp//:rclcpp",
+        "@ros2_rosidl//:rosidl_runtime_cpp",
     ],
 )

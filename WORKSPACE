@@ -105,3 +105,39 @@ nanopb_python_deps(interpreter)
 load("@com_github_nanopb_nanopb//extra/bazel:nanopb_workspace.bzl", "nanopb_workspace")
 
 nanopb_workspace()
+
+git_repository(
+    name = "com_github_mvukov_rules_ros2",
+    commit = "3fb8a99e074b166f21a719c6144a37eab35e9199",
+    remote = "https://github.com/mvukov/rules_ros2.git",
+)
+
+load("@com_github_mvukov_rules_ros2//repositories:repositories.bzl", "ros2_repositories")
+
+ros2_repositories()
+
+load("@com_github_mvukov_rules_ros2//repositories:deps.bzl", "PIP_ANNOTATIONS", "ros2_deps")
+
+ros2_deps()
+
+python_register_toolchains(
+    name = "rules_ros2_python",
+    python_version = "3.8.13",
+)
+
+load("@rules_python//python:pip.bzl", "pip_parse")
+load("@rules_ros2_python//:defs.bzl", python_interpreter_target = "interpreter")
+
+pip_parse(
+    name = "rules_ros2_pip_deps",
+    annotations = PIP_ANNOTATIONS,
+    python_interpreter_target = python_interpreter_target,
+    requirements_lock = "@com_github_mvukov_rules_ros2//:requirements_lock.txt",
+)
+
+load(
+    "@rules_ros2_pip_deps//:requirements.bzl",
+    install_rules_ros2_pip_deps = "install_deps",
+)
+
+install_rules_ros2_pip_deps()
