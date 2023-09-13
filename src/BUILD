@@ -19,6 +19,7 @@ cc_binary(
         ":benchmark_nanopb",
         ":benchmark_proto2",
         ":benchmark_proto3",
+        ":benchmark_proto3_arena",
         ":benchmark_ros2",
         ":benchmark_upb",
         "@com_github_google_benchmark//:benchmark",
@@ -51,6 +52,17 @@ cc_library(
     name = "benchmark_proto3",
     srcs = [],
     hdrs = ["benchmark_proto3.h"],
+    deps = [
+        ":benchmark",
+        ":consts",
+        "//msgs:robolog_pb3_cc",
+    ],
+)
+
+cc_library(
+    name = "benchmark_proto3_arena",
+    srcs = [],
+    hdrs = ["benchmark_proto3_arena.h"],
     deps = [
         ":benchmark",
         ":consts",
