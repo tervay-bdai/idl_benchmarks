@@ -28,40 +28,35 @@ public:
   robolog_npb_Robolog makeMessage() {
     robolog_npb_Robolog robolog = robolog_npb_Robolog_init_zero;
     robolog_npb_Metadata *metadata = &robolog.metadata;
-    robolog_npb_RTCycle rtcycle = robolog.cycles[0];
-    robolog_npb_PhysicalState *leg_states = rtcycle.leg_states;
-    robolog_npb_PhysicalState *arm_state = &rtcycle.arm_state;
-    robolog_npb_PhysicalState *elbow_state = &rtcycle.elbow_state;
-    robolog_npb_Pose3D *pose = &rtcycle.pose;
 
     // Populate the fields
     metadata->robot = robolog_npb_Robot_Autumn;
     strncpy(metadata->git_commit_sha, "abcdef12345",
             sizeof(metadata->git_commit_sha));
-    metadata->git_commit_sha[sizeof(metadata->git_commit_sha) - 1] =
-        '\0'; // Ensure null-termination
+    metadata->git_commit_sha[sizeof(metadata->git_commit_sha) - 1] = '\0';
     metadata->timestamp = 1234567890;
 
     for (int i = 0; i < 4; i++) {
-      leg_states[i].position = 1.0f * i;
-      leg_states[i].velocity = 2.0f * i;
-      leg_states[i].acceleration = 3.0f * i;
+      robolog.cycles[0].leg_states[i] = robolog_npb_PhysicalState_init_zero;
+      robolog.cycles[0].leg_states[i].position = 1.0f * i;
+      robolog.cycles[0].leg_states[i].velocity = 2.0f * i;
+      robolog.cycles[0].leg_states[i].acceleration = 3.0f * i;
     }
 
     robolog.cycles_count = 1;
     robolog.cycles[0].leg_states_count = 4;
 
-    arm_state->position = 10.0f;
-    arm_state->velocity = 20.0f;
-    arm_state->acceleration = 30.0f;
+    robolog.cycles[0].arm_state.position = 10.0f;
+    robolog.cycles[0].arm_state.velocity = 20.0f;
+    robolog.cycles[0].arm_state.acceleration = 30.0f;
 
-    elbow_state->position = 100.0f;
-    elbow_state->velocity = 200.0f;
-    elbow_state->acceleration = 300.0f;
+    robolog.cycles[0].elbow_state.position = 100.0f;
+    robolog.cycles[0].elbow_state.velocity = 200.0f;
+    robolog.cycles[0].elbow_state.acceleration = 300.0f;
 
-    pose->x = 1.0f;
-    pose->y = 2.0f;
-    pose->z = 3.0f;
+    robolog.cycles[0].pose.x = 1.0f;
+    robolog.cycles[0].pose.y = 2.0f;
+    robolog.cycles[0].pose.z = 3.0f;
 
     return robolog;
   }
