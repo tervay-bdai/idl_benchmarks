@@ -13,11 +13,23 @@
 #include "src/benchmark.h"
 #include "src/consts.h"
 
-class Ros2Benchmarkable : public Benchmarkable {
+class Ros2Benchmarkable
+    : public Benchmarkable<robolog_interface::msg::Robolog> {
 public:
   Ros2Benchmarkable() : Benchmarkable() {}
 
-  const SerializeResult serialize() {
+  const SerializeResult serialize(robolog_interface::msg::Robolog message) {
+    auto msg_ptr = std::make_shared<robolog_interface::msg::Robolog>(message);
+    ser.serialize_message(msg_ptr.get(), &out);
+
+    return {
+        .data = reinterpret_cast<const std::byte *>(
+            out.get_rcl_serialized_message().buffer),
+        .size = out.size(),
+    };
+  }
+
+  robolog_interface::msg::Robolog makeMessage() {
     robolog_interface::msg::Robolog robolog_msg;
 
     // Create a Metadata message and set its fields
@@ -59,16 +71,7 @@ public:
 
     robolog_msg.cycles.push_back(rtcycle_msg);
 
-    auto msg_ptr =
-        std::make_shared<robolog_interface::msg::Robolog>(robolog_msg);
-
-    ser.serialize_message(msg_ptr.get(), &out);
-
-    return {
-        .data = reinterpret_cast<const std::byte *>(
-            out.get_rcl_serialized_message().buffer),
-        .size = out.size(),
-    };
+    return robolog_msg;
   }
 
   rclcpp::Serialization<robolog_interface::msg::Robolog> ser;

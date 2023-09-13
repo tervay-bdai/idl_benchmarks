@@ -7,9 +7,10 @@ struct SerializeResult {
   const size_t size;
 };
 
-class Benchmarkable {
+template <typename T> class Benchmarkable {
 public:
   Benchmarkable() {}
   virtual ~Benchmarkable() {}
-  virtual const SerializeResult serialize() = 0;
+  virtual const SerializeResult serialize(T message) = 0;
+  virtual T makeMessage() = 0;
 };

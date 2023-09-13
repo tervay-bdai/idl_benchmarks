@@ -6,11 +6,19 @@
 #include "src/benchmark.h"
 #include "src/consts.h"
 
-class Proto2Benchmarkable : public Benchmarkable {
+class Proto2Benchmarkable : public Benchmarkable<robolog_pb2::Robolog> {
 public:
   Proto2Benchmarkable() : Benchmarkable() {}
 
-  const SerializeResult serialize() {
+  const SerializeResult serialize(robolog_pb2::Robolog message) {
+    message.SerializeToString(&s);
+    return {
+        .data = reinterpret_cast<const std::byte *>(s.data()),
+        .size = s.size(),
+    };
+  }
+
+  robolog_pb2::Robolog makeMessage() {
     robolog_pb2::Robolog myLog;
 
     robolog_pb2::Metadata *metadata = myLog.mutable_metadata();
@@ -41,11 +49,7 @@ public:
     pose->set_y(2.0f);
     pose->set_z(3.0f);
 
-    myLog.SerializeToString(&s);
-    return {
-        .data = reinterpret_cast<const std::byte *>(s.data()),
-        .size = s.size(),
-    };
+    return myLog;
   }
 
   std::string s;

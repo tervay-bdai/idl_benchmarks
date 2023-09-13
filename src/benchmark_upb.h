@@ -9,11 +9,19 @@
 #include "upb/reflection/def.h"
 #include "upb/reflection/def.hpp"
 
-class UpbBenchmarkable : public Benchmarkable {
+class UpbBenchmarkable : public Benchmarkable<robolog_upb_Robolog *> {
 public:
   UpbBenchmarkable() : Benchmarkable() {}
 
-  const SerializeResult serialize() {
+  const SerializeResult serialize(robolog_upb_Robolog *message) {
+    s_.data = robolog_upb_Robolog_serialize(message, arena_.ptr(), &s_.size);
+    return {
+        .data = reinterpret_cast<const std::byte *>(s_.data),
+        .size = s_.size,
+    };
+  }
+
+  robolog_upb_Robolog *makeMessage() {
     const auto a = arena_.ptr();
 
     robolog_upb_Robolog *log = robolog_upb_Robolog_new(a);
@@ -52,11 +60,7 @@ public:
     robolog_upb_Pose3D_set_y(pose, 2.0f);
     robolog_upb_Pose3D_set_z(pose, 3.0f);
 
-    s_.data = robolog_upb_Robolog_serialize(log, a, &s_.size);
-    return {
-        .data = reinterpret_cast<const std::byte *>(s_.data),
-        .size = s_.size,
-    };
+    return log;
   }
 
   upb::DefPool defpool_;

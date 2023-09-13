@@ -8,23 +8,24 @@
 #include "src/benchmark.h"
 #include "src/consts.h"
 
-bool encode_string(pb_ostream_t *stream, const pb_field_t *field,
-                   void *const *arg) {
-  const char *str = (const char *)(*arg);
-
-  if (!pb_encode_tag_for_field(stream, field))
-    return false;
-
-  return pb_encode_string(stream, (uint8_t *)str, strlen(str));
-}
-
-class NanoPbBenchmarkable : public Benchmarkable {
+class NanoPbBenchmarkable : public Benchmarkable<robolog_npb_Robolog> {
 public:
   NanoPbBenchmarkable() : Benchmarkable() {}
 
-  const SerializeResult serialize() {
+  const SerializeResult serialize(robolog_npb_Robolog message) {
     std::memset(buffer, 0, sizeof(buffer));
 
+    pb_ostream_t ostream =
+        pb_ostream_from_buffer(buffer, robolog_npb_Robolog_size);
+    pb_encode(&ostream, robolog_npb_Robolog_fields, &message);
+
+    return {
+        .data = reinterpret_cast<const std::byte *>(buffer),
+        .size = ostream.bytes_written,
+    };
+  }
+
+  robolog_npb_Robolog makeMessage() {
     robolog_npb_Robolog robolog = robolog_npb_Robolog_init_zero;
     robolog_npb_Metadata *metadata = &robolog.metadata;
     robolog_npb_RTCycle rtcycle = robolog.cycles[0];
@@ -62,14 +63,7 @@ public:
     pose->y = 2.0f;
     pose->z = 3.0f;
 
-    pb_ostream_t ostream =
-        pb_ostream_from_buffer(buffer, robolog_npb_Robolog_size);
-    pb_encode(&ostream, robolog_npb_Robolog_fields, &robolog);
-
-    return {
-        .data = reinterpret_cast<const std::byte *>(buffer),
-        .size = ostream.bytes_written,
-    };
+    return robolog;
   }
 
   uint8_t buffer[robolog_npb_Robolog_size];

@@ -12,7 +12,7 @@
   static void BM_##name(benchmark::State &state) {                             \
     benchmarkable_type benchmarkable;                                          \
     for (auto _ : state) {                                                     \
-      benchmarkable.serialize();                                               \
+      benchmarkable.serialize(benchmarkable.makeMessage());                    \
     }                                                                          \
   }                                                                            \
                                                                                \

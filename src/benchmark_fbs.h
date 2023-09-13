@@ -6,11 +6,42 @@
 #include "src/benchmark.h"
 #include "src/consts.h"
 
-class FbsBenchmarkable : public Benchmarkable {
+template <typename Type>
+Type *GetMutablePointer(flatbuffers::FlatBufferBuilder &builder,
+                        const flatbuffers::Offset<Type> &object) {
+  return (reinterpret_cast<Type *>(builder.GetCurrentBufferPointer() +
+                                   builder.GetSize() - object.o));
+}
+
+template <typename Type>
+Type *GetPointer(flatbuffers::FlatBufferBuilder &builder,
+                 flatbuffers::Offset<Type> &object) {
+  return (reinterpret_cast<Type *>(builder.GetCurrentBufferPointer() +
+                                   builder.GetSize() - object.o));
+}
+
+template <typename Type>
+const Type *GetPointer(flatbuffers::FlatBufferBuilder &builder,
+                       const flatbuffers::Offset<Type> &object) {
+  return (reinterpret_cast<const Type *>(builder.GetCurrentBufferPointer() +
+                                         builder.GetSize() - object.o));
+}
+
+class FbsBenchmarkable
+    : public Benchmarkable<flatbuffers::Offset<robolog_fbs::MyLog>> {
 public:
   FbsBenchmarkable() : Benchmarkable(), fbs_builder_(1024) {}
 
-  const SerializeResult serialize() {
+  const SerializeResult
+  serialize(const flatbuffers::Offset<robolog_fbs::MyLog> message) {
+    return {
+        .data = reinterpret_cast<const std::byte *>(
+            fbs_builder_.GetBufferPointer()),
+        .size = fbs_builder_.GetSize(),
+    };
+  }
+
+  flatbuffers::Offset<robolog_fbs::MyLog> makeMessage() {
     // Clear the existing data in the builder
     fbs_builder_.Clear();
 
@@ -60,11 +91,7 @@ public:
     // Finish building the buffer
     fbs_builder_.Finish(mylog);
 
-    return {
-        .data = reinterpret_cast<const std::byte *>(
-            fbs_builder_.GetBufferPointer()),
-        .size = fbs_builder_.GetSize(),
-    };
+    return mylog;
   }
 
   flatbuffers::FlatBufferBuilder fbs_builder_;
