@@ -36,27 +36,29 @@ public:
     metadata->git_commit_sha[sizeof(metadata->git_commit_sha) - 1] = '\0';
     metadata->timestamp = 1234567890;
 
-    for (int i = 0; i < 4; i++) {
-      robolog.cycles[0].leg_states[i] = robolog_npb_PhysicalState_init_zero;
-      robolog.cycles[0].leg_states[i].position = 1.0f * i;
-      robolog.cycles[0].leg_states[i].velocity = 2.0f * i;
-      robolog.cycles[0].leg_states[i].acceleration = 3.0f * i;
+    robolog.cycles_count = num_cycles;
+    for (size_t i = 0; i < num_cycles; i++) {
+      robolog.cycles[i].leg_states_count = 4;
+
+      for (int j = 0; j < 4; j++) {
+        robolog.cycles[i].leg_states[j] = robolog_npb_PhysicalState_init_zero;
+        robolog.cycles[i].leg_states[j].position = getRandom();
+        robolog.cycles[i].leg_states[j].velocity = getRandom();
+        robolog.cycles[i].leg_states[j].acceleration = getRandom();
+      }
+
+      robolog.cycles[i].arm_state.position = getRandom();
+      robolog.cycles[i].arm_state.velocity = getRandom();
+      robolog.cycles[i].arm_state.acceleration = getRandom();
+
+      robolog.cycles[i].elbow_state.position = getRandom();
+      robolog.cycles[i].elbow_state.velocity = getRandom();
+      robolog.cycles[i].elbow_state.acceleration = getRandom();
+
+      robolog.cycles[i].pose.x = getRandom();
+      robolog.cycles[i].pose.y = getRandom();
+      robolog.cycles[i].pose.z = getRandom();
     }
-
-    robolog.cycles_count = 1;
-    robolog.cycles[0].leg_states_count = 4;
-
-    robolog.cycles[0].arm_state.position = 10.0f;
-    robolog.cycles[0].arm_state.velocity = 20.0f;
-    robolog.cycles[0].arm_state.acceleration = 30.0f;
-
-    robolog.cycles[0].elbow_state.position = 100.0f;
-    robolog.cycles[0].elbow_state.velocity = 200.0f;
-    robolog.cycles[0].elbow_state.acceleration = 300.0f;
-
-    robolog.cycles[0].pose.x = 1.0f;
-    robolog.cycles[0].pose.y = 2.0f;
-    robolog.cycles[0].pose.z = 3.0f;
 
     return robolog;
   }

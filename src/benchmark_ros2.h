@@ -40,36 +40,40 @@ public:
     metadata_msg.timestamp = 1234567890;
     robolog_msg.metadata = metadata_msg;
 
-    // Populate RTCycle
-    robolog_interface::msg::RTCycle rtcycle_msg;
+    robolog_msg.cycles.reserve(num_cycles);
 
-    for (int i = 0; i < 4; i++) {
-      robolog_interface::msg::PhysicalState leg_state_msg;
-      leg_state_msg.position = 1.0f * i;
-      leg_state_msg.velocity = 2.0f * i;
-      leg_state_msg.acceleration = 3.0f * i;
-      rtcycle_msg.leg_states.push_back(leg_state_msg);
+    for (size_t i = 0; i < num_cycles; i++) {
+      robolog_interface::msg::RTCycle rtcycle_msg;
+      rtcycle_msg.leg_states.reserve(4);
+
+      for (int j = 0; j < 4; j++) {
+        robolog_interface::msg::PhysicalState leg_state_msg;
+        leg_state_msg.position = getRandom();
+        leg_state_msg.velocity = getRandom();
+        leg_state_msg.acceleration = getRandom();
+        rtcycle_msg.leg_states.emplace_back(leg_state_msg);
+      }
+
+      robolog_interface::msg::PhysicalState arm_state_msg;
+      arm_state_msg.position = getRandom();
+      arm_state_msg.velocity = getRandom();
+      arm_state_msg.acceleration = getRandom();
+      rtcycle_msg.arm_state = arm_state_msg;
+
+      robolog_interface::msg::PhysicalState elbow_state_msg;
+      elbow_state_msg.position = getRandom();
+      elbow_state_msg.velocity = getRandom();
+      elbow_state_msg.acceleration = getRandom();
+      rtcycle_msg.elbow_state = elbow_state_msg;
+
+      robolog_interface::msg::Pose3D pose_msg;
+      pose_msg.x = getRandom();
+      pose_msg.y = getRandom();
+      pose_msg.z = getRandom();
+      rtcycle_msg.pose = pose_msg;
+
+      robolog_msg.cycles.emplace_back(rtcycle_msg);
     }
-
-    robolog_interface::msg::PhysicalState arm_state_msg;
-    arm_state_msg.position = 10.0f;
-    arm_state_msg.velocity = 20.0f;
-    arm_state_msg.acceleration = 30.0f;
-    rtcycle_msg.arm_state = arm_state_msg;
-
-    robolog_interface::msg::PhysicalState elbow_state_msg;
-    elbow_state_msg.position = 100.0f;
-    elbow_state_msg.velocity = 200.0f;
-    elbow_state_msg.acceleration = 300.0f;
-    rtcycle_msg.elbow_state = elbow_state_msg;
-
-    robolog_interface::msg::Pose3D pose_msg;
-    pose_msg.x = 1.0f;
-    pose_msg.y = 2.0f;
-    pose_msg.z = 3.0f;
-    rtcycle_msg.pose = pose_msg;
-
-    robolog_msg.cycles.push_back(rtcycle_msg);
 
     return robolog_msg;
   }

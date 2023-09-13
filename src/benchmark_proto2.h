@@ -26,28 +26,33 @@ public:
     metadata->set_git_commit_sha("abcdef12345");
     metadata->set_timestamp(1234567890);
 
-    // Populate RTCycle
-    robolog_pb2::RTCycle *cycle = myLog.add_cycles();
-    for (int i = 0; i < 4; i++) {
-      robolog_pb2::PhysicalState *legState = cycle->add_leg_states();
-      legState->set_position(1.0f * i);
-      legState->set_velocity(2.0f * i);
-      legState->set_acceleration(3.0f * i);
+    myLog.mutable_cycles()->Reserve(num_cycles);
+
+    for (size_t i = 0; i < num_cycles; i++) {
+      robolog_pb2::RTCycle *cycle = myLog.add_cycles();
+      for (int i = 0; i < 4; i++) {
+        cycle->mutable_leg_states()->Reserve(4);
+
+        robolog_pb2::PhysicalState *legState = cycle->add_leg_states();
+        legState->set_position(getRandom());
+        legState->set_velocity(getRandom());
+        legState->set_acceleration(getRandom());
+      }
+      robolog_pb2::PhysicalState *armState = cycle->mutable_arm_state();
+      armState->set_position(getRandom());
+      armState->set_velocity(getRandom());
+      armState->set_acceleration(getRandom());
+
+      robolog_pb2::PhysicalState *elbowState = cycle->mutable_elbow_state();
+      elbowState->set_position(getRandom());
+      elbowState->set_velocity(getRandom());
+      elbowState->set_acceleration(getRandom());
+
+      robolog_pb2::Pose3D *pose = cycle->mutable_pose();
+      pose->set_x(getRandom());
+      pose->set_y(getRandom());
+      pose->set_z(getRandom());
     }
-    robolog_pb2::PhysicalState *armState = cycle->mutable_arm_state();
-    armState->set_position(10.0f);
-    armState->set_velocity(20.0f);
-    armState->set_acceleration(30.0f);
-
-    robolog_pb2::PhysicalState *elbowState = cycle->mutable_elbow_state();
-    elbowState->set_position(100.0f);
-    elbowState->set_velocity(200.0f);
-    elbowState->set_acceleration(300.0f);
-
-    robolog_pb2::Pose3D *pose = cycle->mutable_pose();
-    pose->set_x(1.0f);
-    pose->set_y(2.0f);
-    pose->set_z(3.0f);
 
     return myLog;
   }

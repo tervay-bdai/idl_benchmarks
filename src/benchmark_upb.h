@@ -33,32 +33,35 @@ public:
     robolog_upb_Metadata_set_timestamp(metadata, 1234567890);
     robolog_upb_Robolog_set_metadata(log, metadata);
 
-    robolog_upb_RTCycle *cycle = robolog_upb_Robolog_add_cycles(log, a);
-    for (int i = 0; i < 4; i++) {
-      robolog_upb_PhysicalState *legState =
-          robolog_upb_RTCycle_add_leg_states(cycle, a);
+    for (size_t i = 0; i < num_cycles; i++) {
+      robolog_upb_RTCycle *cycle = robolog_upb_Robolog_add_cycles(log, a);
 
-      robolog_upb_PhysicalState_set_position(legState, 1.0f * i);
-      robolog_upb_PhysicalState_set_velocity(legState, 2.0f * i);
-      robolog_upb_PhysicalState_set_acceleration(legState, 3.0f * i);
+      for (int j = 0; j < 4; j++) {
+        robolog_upb_PhysicalState *legState =
+            robolog_upb_RTCycle_add_leg_states(cycle, a);
+
+        robolog_upb_PhysicalState_set_position(legState, getRandom());
+        robolog_upb_PhysicalState_set_velocity(legState, getRandom());
+        robolog_upb_PhysicalState_set_acceleration(legState, getRandom());
+      }
+
+      robolog_upb_PhysicalState *armState =
+          robolog_upb_RTCycle_mutable_arm_state(cycle, a);
+      robolog_upb_PhysicalState_set_position(armState, getRandom());
+      robolog_upb_PhysicalState_set_velocity(armState, getRandom());
+      robolog_upb_PhysicalState_set_acceleration(armState, getRandom());
+
+      robolog_upb_PhysicalState *elbowState =
+          robolog_upb_RTCycle_mutable_elbow_state(cycle, a);
+      robolog_upb_PhysicalState_set_position(elbowState, getRandom());
+      robolog_upb_PhysicalState_set_velocity(elbowState, getRandom());
+      robolog_upb_PhysicalState_set_acceleration(elbowState, getRandom());
+
+      robolog_upb_Pose3D *pose = robolog_upb_RTCycle_mutable_pose(cycle, a);
+      robolog_upb_Pose3D_set_x(pose, getRandom());
+      robolog_upb_Pose3D_set_y(pose, getRandom());
+      robolog_upb_Pose3D_set_z(pose, getRandom());
     }
-
-    robolog_upb_PhysicalState *armState =
-        robolog_upb_RTCycle_mutable_arm_state(cycle, a);
-    robolog_upb_PhysicalState_set_position(armState, 10.0f);
-    robolog_upb_PhysicalState_set_velocity(armState, 20.0f);
-    robolog_upb_PhysicalState_set_acceleration(armState, 30.0f);
-
-    robolog_upb_PhysicalState *elbowState =
-        robolog_upb_RTCycle_mutable_elbow_state(cycle, a);
-    robolog_upb_PhysicalState_set_position(elbowState, 100.0f);
-    robolog_upb_PhysicalState_set_velocity(elbowState, 200.0f);
-    robolog_upb_PhysicalState_set_acceleration(elbowState, 300.0f);
-
-    robolog_upb_Pose3D *pose = robolog_upb_RTCycle_mutable_pose(cycle, a);
-    robolog_upb_Pose3D_set_x(pose, 1.0f);
-    robolog_upb_Pose3D_set_y(pose, 2.0f);
-    robolog_upb_Pose3D_set_z(pose, 3.0f);
 
     return log;
   }

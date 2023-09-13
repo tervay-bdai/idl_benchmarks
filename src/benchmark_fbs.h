@@ -53,6 +53,8 @@ public:
                                                 git_commit_sha, timestamp);
 
     std::vector<flatbuffers::Offset<robolog_fbs::RTCycle>> rtcycle_offsets;
+    rtcycle_offsets.reserve(num_cycles);
+
     for (size_t i = 0; i < num_cycles; ++i) {
       flatbuffers::Offset<robolog_fbs::PhysicalState> leg_states[4];
       for (int j = 0; j < 4; ++j) {
@@ -62,7 +64,6 @@ public:
         leg_states[j] = robolog_fbs::CreatePhysicalState(
             fbs_builder_, position, velocity, acceleration);
       }
-
       auto leg_states_vector = fbs_builder_.CreateVector(leg_states, 4);
 
       float x = getRandom();
@@ -79,7 +80,7 @@ public:
                                            getRandom(), getRandom()),
           pose);
 
-      rtcycle_offsets.push_back(rtcycle);
+      rtcycle_offsets.emplace_back(rtcycle);
     }
 
     auto cycles_vector = fbs_builder_.CreateVector(rtcycle_offsets);
