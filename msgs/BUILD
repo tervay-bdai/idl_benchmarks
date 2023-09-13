@@ -1,4 +1,6 @@
 load("@com_github_nanopb_nanopb//extra/bazel:nanopb_cc_proto_library.bzl", "cc_nanopb_proto_library")
+load("@rules_capnproto//capnp:capnp_library.bzl", "capnp_library")
+load("@rules_capnproto//capnp:cc_capnp_library.bzl", "cc_capnp_library")
 load("@rules_flatbuffers//flatbuffers:cc_flatbuffers_library.bzl", "cc_flatbuffers_library")
 load("@rules_flatbuffers//flatbuffers:flatbuffers_library.bzl", "flatbuffers_library")
 load("@rules_proto//proto:defs.bzl", "proto_library")
@@ -14,6 +16,7 @@ proto_library(
 
 cc_nanopb_proto_library(
     name = "robolog_npb_cc",
+    defines = ["PB_FIELD_32BIT"],
     protos = [":robolog_npb"],
 )
 
@@ -64,4 +67,14 @@ upb_proto_reflection_library(
     deps = [
         ":robolog_upb",
     ],
+)
+
+capnp_library(
+    name = "robolog_capnp",
+    srcs = ["robolog_cnp.capnp"],
+)
+
+cc_capnp_library(
+    name = "robolog_capnp_cc",
+    deps = [":robolog_capnp"],
 )

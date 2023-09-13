@@ -17,6 +17,7 @@ cc_binary(
     srcs = ["main.cc"],
     deps = [
         ":benchmark",
+        ":benchmark_capnp",
         ":benchmark_fbs",
         ":benchmark_nanopb",
         ":benchmark_proto2",
@@ -106,6 +107,18 @@ cc_library(
         "//msgs/ros:robolog_interface_cc",
         "@ros2_rclcpp//:rclcpp",
         "@ros2_rosidl//:rosidl_runtime_cpp",
+    ],
+)
+
+cc_library(
+    name = "benchmark_capnp",
+    srcs = [],
+    hdrs = ["benchmark_capnp.h"],
+    deps = [
+        ":benchmark",
+        ":consts",
+        "//msgs:robolog_capnp_cc",
+        "@capnproto//:capnp_json",
     ],
 )
 

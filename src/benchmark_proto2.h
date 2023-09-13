@@ -30,7 +30,7 @@ public:
 
     for (size_t i = 0; i < num_cycles; i++) {
       robolog_pb2::RTCycle *cycle = myLog.add_cycles();
-      for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
         cycle->mutable_leg_states()->Reserve(4);
 
         robolog_pb2::PhysicalState *legState = cycle->add_leg_states();

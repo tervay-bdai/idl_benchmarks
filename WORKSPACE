@@ -143,8 +143,21 @@ load(
 install_rules_ros2_pip_deps()
 
 http_archive(
-    name = "msgpack",
-    build_file = "//buildfiles:msgpack.BUILD",
-    strip_prefix = "msgpack-c-37fcaa1264746456c14aec08bf6efc8d1ab06f7b",
-    url = "https://github.com/msgpack/msgpack-c/archive/37fcaa1264746456c14aec08bf6efc8d1ab06f7b.zip",
+    name = "rules_capnproto",
+    sha256 = "c75b4ebcd4f7db7ac2a2a6a5be3c64599c97a26934db67de51d3935304ab6e8c",
+    strip_prefix = "rules_capnproto-0.1.0",
+    urls = ["https://github.com/kgreenek/rules_capnproto/archive/refs/tags/v0.1.0.tar.gz"],
 )
+
+load(
+    "@rules_capnproto//capnp:repositories.bzl",
+    "capnp_cc_toolchain",
+    "capnp_dependencies",
+    "capnp_toolchain",
+)
+
+capnp_dependencies()
+
+capnp_toolchain()
+
+capnp_cc_toolchain()

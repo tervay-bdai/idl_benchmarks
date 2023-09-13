@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "benchmark/benchmark.h"
+#include "src/benchmark_capnp.h"
 #include "src/benchmark_fbs.h"
 #include "src/benchmark_nanopb.h"
 #include "src/benchmark_proto2.h"
@@ -82,6 +83,7 @@ static void CustomArguments(benchmark::internal::Benchmark *b) {
       ->Unit(benchmark::kMicrosecond)                                          \
       ->Apply(CustomArguments);
 
+ADD_BM(capnp, CapnpBenchmarkable);
 ADD_BM(proto2, Proto2Benchmarkable);
 ADD_BM(proto3, Proto3Benchmarkable);
 ADD_BM(proto3_arena, Proto3ArenaBenchmarkable);
