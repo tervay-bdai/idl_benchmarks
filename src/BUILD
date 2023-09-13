@@ -1,3 +1,5 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
 cc_library(
     name = "benchmark",
     srcs = [],
@@ -117,4 +119,10 @@ cc_test(
         ":benchmark_upb",
         "@com_google_googletest//:gtest_main",
     ],
+)
+
+py_binary(
+    name = "process",
+    srcs = ["process.py"],
+    main = "process.py",
 )

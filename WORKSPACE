@@ -141,3 +141,10 @@ load(
 )
 
 install_rules_ros2_pip_deps()
+
+http_archive(
+    name = "msgpack",
+    build_file = "//buildfiles:msgpack.BUILD",
+    strip_prefix = "msgpack-c-37fcaa1264746456c14aec08bf6efc8d1ab06f7b",
+    url = "https://github.com/msgpack/msgpack-c/archive/37fcaa1264746456c14aec08bf6efc8d1ab06f7b.zip",
+)

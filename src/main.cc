@@ -43,7 +43,7 @@ double calculateQ3(const std::vector<double> &v) {
   return q3;
 }
 
-inline constexpr size_t num_cycle_tests[] = {1, 10, 100};
+inline constexpr size_t num_cycle_tests[] = {1, 50, 100, 500};
 
 static void CustomArguments(benchmark::internal::Benchmark *b) {
   for (auto &x : num_cycle_tests) {
@@ -79,6 +79,7 @@ static void CustomArguments(benchmark::internal::Benchmark *b) {
                           [](const std::vector<double> &v) -> double {         \
                             return calculateQ3(v);                             \
                           })                                                   \
+      ->Unit(benchmark::kMicrosecond)                                          \
       ->Apply(CustomArguments);
 
 ADD_BM(proto2, Proto2Benchmarkable);
