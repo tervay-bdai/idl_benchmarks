@@ -43,7 +43,7 @@ double calculateQ3(const std::vector<double> &v) {
   return q3;
 }
 
-inline constexpr size_t num_cycle_tests[] = {1, 50, 100, 500};
+inline constexpr size_t num_cycle_tests[] = {1, 100, 500, 1000, 2500};
 
 static void CustomArguments(benchmark::internal::Benchmark *b) {
   for (auto &x : num_cycle_tests) {
