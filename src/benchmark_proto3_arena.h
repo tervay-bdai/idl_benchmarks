@@ -19,7 +19,7 @@ public:
     };
   }
 
-  robolog_pb3::Robolog *makeMessage() {
+  robolog_pb3::Robolog *makeMessage(const size_t num_cycles) {
     robolog_pb3::Robolog *myLog =
         google::protobuf::Arena::Create<robolog_pb3::Robolog>(&arena);
 

@@ -25,7 +25,7 @@ public:
     };
   }
 
-  robolog_npb_Robolog makeMessage() {
+  robolog_npb_Robolog makeMessage(const size_t num_cycles) {
     robolog_npb_Robolog robolog = robolog_npb_Robolog_init_zero;
     robolog_npb_Metadata *metadata = &robolog.metadata;
 

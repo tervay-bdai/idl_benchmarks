@@ -29,7 +29,7 @@ public:
     };
   }
 
-  robolog_interface::msg::Robolog makeMessage() {
+  robolog_interface::msg::Robolog makeMessage(const size_t num_cycles) {
     robolog_interface::msg::Robolog robolog_msg;
 
     // Create a Metadata message and set its fields

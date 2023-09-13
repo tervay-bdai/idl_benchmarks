@@ -12,5 +12,5 @@ public:
   Benchmarkable() {}
   virtual ~Benchmarkable() {}
   virtual const SerializeResult serialize(T message) = 0;
-  virtual T makeMessage() = 0;
+  virtual T makeMessage(const size_t num_cycles) = 0;
 };

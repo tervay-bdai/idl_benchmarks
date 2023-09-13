@@ -18,7 +18,7 @@ public:
     };
   }
 
-  robolog_pb3::Robolog makeMessage() {
+  robolog_pb3::Robolog makeMessage(const size_t num_cycles) {
     robolog_pb3::Robolog myLog;
 
     robolog_pb3::Metadata *metadata = myLog.mutable_metadata();

@@ -21,7 +21,7 @@ public:
     };
   }
 
-  robolog_upb_Robolog *makeMessage() {
+  robolog_upb_Robolog *makeMessage(const size_t num_cycles) {
     const auto a = arena_.ptr();
 
     robolog_upb_Robolog *log = robolog_upb_Robolog_new(a);
