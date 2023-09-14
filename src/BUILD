@@ -4,6 +4,10 @@ cc_library(
     name = "benchmark",
     srcs = [],
     hdrs = ["benchmark.h"],
+    deps = [
+        "@ros2_common_interfaces//:cpp_std_msgs",
+        "@ros2_rclcpp//:rclcpp",
+    ],
 )
 
 cc_library(
@@ -26,6 +30,7 @@ cc_binary(
         ":benchmark_ros2",
         ":benchmark_upb",
         "@com_github_google_benchmark//:benchmark",
+        "@ros2_rclcpp//:rclcpp",
     ],
 )
 

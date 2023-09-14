@@ -28,9 +28,11 @@ const Type *GetPointer(flatbuffers::FlatBufferBuilder &builder,
 }
 
 class FbsBenchmarkable
-    : public Benchmarkable<flatbuffers::Offset<robolog_fbs::MyLog>> {
+    : public Benchmarkable<flatbuffers::Offset<robolog_fbs::MyLog>,
+                           std_msgs::msg::UInt8MultiArray> {
 public:
-  FbsBenchmarkable() : Benchmarkable(), fbs_builder_(1024) {}
+  FbsBenchmarkable(MinimalPublisher<std_msgs::msg::UInt8MultiArray> *publisher)
+      : Benchmarkable(publisher), fbs_builder_(1024) {}
 
   const SerializeResult
   serialize(const flatbuffers::Offset<robolog_fbs::MyLog> message) {
@@ -42,10 +44,8 @@ public:
   }
 
   flatbuffers::Offset<robolog_fbs::MyLog> makeMessage(const size_t num_cycles) {
-    // Clear the existing data in the builder
     fbs_builder_.Clear();
 
-    // Create a Metadata object
     auto git_commit_sha = fbs_builder_.CreateString("abcdef12345");
     robolog_fbs::Robot robot = robolog_fbs::Robot_Autumn;
     uint64_t timestamp = 1234567890;
@@ -86,7 +86,6 @@ public:
     auto cycles_vector = fbs_builder_.CreateVector(rtcycle_offsets);
     auto mylog =
         robolog_fbs::CreateMyLog(fbs_builder_, metadata, cycles_vector);
-    // Finish building the buffer
     fbs_builder_.Finish(mylog);
 
     return mylog;

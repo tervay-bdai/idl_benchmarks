@@ -8,9 +8,13 @@
 #include "src/benchmark.h"
 #include "src/consts.h"
 
-class NanoPbBenchmarkable : public Benchmarkable<robolog_npb_Robolog> {
+class NanoPbBenchmarkable
+    : public Benchmarkable<robolog_npb_Robolog,
+                           std_msgs::msg::UInt8MultiArray> {
 public:
-  NanoPbBenchmarkable() : Benchmarkable() {}
+  NanoPbBenchmarkable(
+      MinimalPublisher<std_msgs::msg::UInt8MultiArray> *publisher)
+      : Benchmarkable(publisher) {}
 
   const SerializeResult serialize(robolog_npb_Robolog message) {
     std::memset(buffer, 0, sizeof(buffer));
@@ -29,7 +33,6 @@ public:
     robolog_npb_Robolog robolog = robolog_npb_Robolog_init_zero;
     robolog_npb_Metadata *metadata = &robolog.metadata;
 
-    // Populate the fields
     metadata->robot = robolog_npb_Robot_Autumn;
     strncpy(metadata->git_commit_sha, "abcdef12345",
             sizeof(metadata->git_commit_sha));

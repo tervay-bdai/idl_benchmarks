@@ -38,5 +38,5 @@ message RTCycle {
 
 message Robolog {
     required Metadata metadata = 1;
-    repeated RTCycle cycles = 2 [(nanopb).max_count = 2500];
+    repeated RTCycle cycles = 2 [(nanopb).max_count = 5000];
 }

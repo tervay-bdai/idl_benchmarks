@@ -9,9 +9,11 @@
 #include "upb/reflection/def.h"
 #include "upb/reflection/def.hpp"
 
-class UpbBenchmarkable : public Benchmarkable<robolog_upb_Robolog *> {
+class UpbBenchmarkable : public Benchmarkable<robolog_upb_Robolog *,
+                                              std_msgs::msg::UInt8MultiArray> {
 public:
-  UpbBenchmarkable() : Benchmarkable() {}
+  UpbBenchmarkable(MinimalPublisher<std_msgs::msg::UInt8MultiArray> *publisher)
+      : Benchmarkable(publisher) {}
 
   const SerializeResult serialize(robolog_upb_Robolog *message) {
     s_.data = robolog_upb_Robolog_serialize(message, arena_.ptr(), &s_.size);

@@ -14,28 +14,23 @@
 #include "src/consts.h"
 
 class Ros2Benchmarkable
-    : public Benchmarkable<robolog_interface::msg::Robolog> {
+    : public Benchmarkable<robolog_interface::msg::Robolog,
+                           robolog_interface::msg::Robolog> {
 public:
-  Ros2Benchmarkable() : Benchmarkable() {}
+  Ros2Benchmarkable(
+      MinimalPublisher<robolog_interface::msg::Robolog> *publisher)
+      : Benchmarkable(publisher) {}
 
   const SerializeResult serialize(robolog_interface::msg::Robolog message) {
-    auto msg_ptr = std::make_shared<robolog_interface::msg::Robolog>(message);
-    ser.serialize_message(msg_ptr.get(), &out);
-
-    return {
-        .data = reinterpret_cast<const std::byte *>(
-            out.get_rcl_serialized_message().buffer),
-        .size = out.size(),
-    };
+    message_ = message;
+    return {.data = 0, .size = 0};
   }
 
   robolog_interface::msg::Robolog makeMessage(const size_t num_cycles) {
     robolog_interface::msg::Robolog robolog_msg;
 
-    // Create a Metadata message and set its fields
     robolog_interface::msg::Metadata metadata_msg;
-    metadata_msg.robot =
-        robolog_interface::msg::Robot::AUTUMN; // Set enum value
+    metadata_msg.robot = robolog_interface::msg::Robot::AUTUMN;
     metadata_msg.git_commit_sha = "abcdef12345";
     metadata_msg.timestamp = 1234567890;
     robolog_msg.metadata = metadata_msg;
@@ -78,6 +73,9 @@ public:
     return robolog_msg;
   }
 
+  void publish() { this->publisher_->publisher_->publish(std::move(message_)); }
+
   rclcpp::Serialization<robolog_interface::msg::Robolog> ser;
   rclcpp::SerializedMessage out;
+  robolog_interface::msg::Robolog message_;
 };

@@ -11,9 +11,12 @@
 #include "src/benchmark.h"
 #include "src/consts.h"
 
-class CapnpBenchmarkable : public Benchmarkable<SerializeResult> {
+class CapnpBenchmarkable
+    : public Benchmarkable<SerializeResult, std_msgs::msg::UInt8MultiArray> {
 public:
-  CapnpBenchmarkable() : Benchmarkable() {}
+  CapnpBenchmarkable(
+      MinimalPublisher<std_msgs::msg::UInt8MultiArray> *publisher)
+      : Benchmarkable(publisher) {}
 
   const SerializeResult serialize(const SerializeResult ser) { return ser; }
 
@@ -51,12 +54,14 @@ public:
       }
     }
 
-    auto m = capnp::messageToFlatArray(message);
-    auto c = m.asChars();
+    arr = capnp::messageToFlatArray(message);
+    auto c = arr.asBytes();
 
     return {
         .data = reinterpret_cast<std::byte *>(c.begin()),
         .size = c.size(),
     };
   }
+
+  kj::Array<capnp::word> arr;
 };

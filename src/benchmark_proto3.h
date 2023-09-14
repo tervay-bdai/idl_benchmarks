@@ -6,9 +6,13 @@
 #include "src/benchmark.h"
 #include "src/consts.h"
 
-class Proto3Benchmarkable : public Benchmarkable<robolog_pb3::Robolog> {
+class Proto3Benchmarkable
+    : public Benchmarkable<robolog_pb3::Robolog,
+                           std_msgs::msg::UInt8MultiArray> {
 public:
-  Proto3Benchmarkable() : Benchmarkable() {}
+  Proto3Benchmarkable(
+      MinimalPublisher<std_msgs::msg::UInt8MultiArray> *publisher)
+      : Benchmarkable(publisher) {}
 
   const SerializeResult serialize(robolog_pb3::Robolog message) {
     message.SerializeToString(&s);

@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "benchmark/benchmark.h"
+#include "rclcpp/rclcpp.hpp"
 #include "src/benchmark_capnp.h"
 #include "src/benchmark_fbs.h"
 #include "src/benchmark_nanopb.h"
@@ -44,7 +45,7 @@ double calculateQ3(const std::vector<double> &v) {
   return q3;
 }
 
-inline constexpr size_t num_cycle_tests[] = {1, 100, 500, 1000, 2500};
+inline constexpr size_t num_cycle_tests[] = {1, 10, 100, 1000, 2500, 5000};
 
 static void CustomArguments(benchmark::internal::Benchmark *b) {
   for (auto &x : num_cycle_tests) {
@@ -52,16 +53,8 @@ static void CustomArguments(benchmark::internal::Benchmark *b) {
   }
 }
 
-#define ADD_BM(name, benchmarkable_type)                                       \
-  template <class... Args>                                                     \
-  static void BM_##name(benchmark::State &state, Args &&...args) {             \
-    benchmarkable_type benchmarkable;                                          \
-    for (auto _ : state) {                                                     \
-      benchmarkable.serialize(benchmarkable.makeMessage(state.range(0)));      \
-    }                                                                          \
-  }                                                                            \
-                                                                               \
-  BENCHMARK(BM_##name)                                                         \
+#define CREATE_BM(name)                                                        \
+  BENCHMARK(name)                                                              \
       ->ComputeStatistics("max",                                               \
                           [](const std::vector<double> &v) -> double {         \
                             return *(                                          \
@@ -83,6 +76,33 @@ static void CustomArguments(benchmark::internal::Benchmark *b) {
       ->Unit(benchmark::kMicrosecond)                                          \
       ->Apply(CustomArguments);
 
+#define ADD_BM_TMPL(name, benchmarkable_type, tmpl)                            \
+  template <class... Args>                                                     \
+  static void BM_##name(benchmark::State &state, Args &&...args) {             \
+    MinimalPublisher<tmpl> publisher;                                          \
+    benchmarkable_type benchmarkable(&publisher);                              \
+    for (auto _ : state) {                                                     \
+      benchmarkable.serialize(benchmarkable.makeMessage(state.range(0)));      \
+    }                                                                          \
+  }                                                                            \
+                                                                               \
+  template <class... Args>                                                     \
+  static void BM_##name##_publish(benchmark::State &state, Args &&...args) {   \
+    auto publisher = std::make_shared<MinimalPublisher<tmpl>>();               \
+    benchmarkable_type benchmarkable(publisher.get());                         \
+    for (auto _ : state) {                                                     \
+      auto result = (benchmarkable.serialize(                                  \
+          benchmarkable.makeMessage(state.range(0))));                         \
+      benchmarkable.setSerializedResult(&result);                              \
+      benchmarkable.publish();                                                 \
+    }                                                                          \
+  }                                                                            \
+  /* CREATE_BM(BM_##name); */                                                  \
+  CREATE_BM(BM_##name##_publish);
+
+#define ADD_BM(name, benchmarkable_type)                                       \
+  ADD_BM_TMPL(name, benchmarkable_type, std_msgs::msg::UInt8MultiArray)
+
 ADD_BM(capnp, CapnpBenchmarkable);
 ADD_BM(proto2, Proto2Benchmarkable);
 ADD_BM(proto3, Proto3Benchmarkable);
@@ -90,6 +110,12 @@ ADD_BM(proto3_arena, Proto3ArenaBenchmarkable);
 ADD_BM(upb, UpbBenchmarkable);
 ADD_BM(nanopb, NanoPbBenchmarkable);
 ADD_BM(flatbuf, FbsBenchmarkable);
-ADD_BM(ros2, Ros2Benchmarkable);
+ADD_BM_TMPL(ros2, Ros2Benchmarkable, robolog_interface::msg::Robolog);
 
-BENCHMARK_MAIN();
+int main(int argc, char **argv) {
+  rclcpp::init(argc, argv);
+  benchmark::Initialize(&argc, argv);
+  benchmark::RunSpecifiedBenchmarks();
+
+  return 0;
+}
